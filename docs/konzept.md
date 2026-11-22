@@ -97,7 +97,7 @@ Weil eine Kachel die ganze Höhe nutzt, gibt es Platz für echte Graphen statt n
 
 ```
 +----------------------------------------+
-| * ci-mac-01              Mac mini      |   Name, Statuspunkt, Rolle
+| * mac-1                  Mac mini      |   Name, Statuspunkt, Rolle
 |  (ring 34%)   Prozessor, 5 Minuten     |   Ring + Verlauf als Fläche
 |               ~~~~~~~~~~~~~~~~~~~~~~   |
 |  52°          Grenze 75°               |   Temperatur groß + Verlauf
