@@ -1,6 +1,6 @@
 # Rackmon: Konzept
 
-Stand: 2026-11, Konzept, noch kein Code.
+Stand: 2026-11-22. Das Konzept ist umgesetzt, was gebaut ist und was offen bleibt, steht in [plan.md](plan.md).
 
 Ein Live-Display im Rack zeigt Leistungsdaten von mehreren Rechnern. Ein Server nimmt die Werte an und zeigt sie an, auf jedem Rechner sendet ein kleiner Agent.
 
@@ -84,32 +84,41 @@ Ressourcenbudget für den Agenten: unter 15 MB RAM, unter 1 % CPU auf einem Rasp
 - Nimmt Pakete unter `POST /ingest` an und prüft das Token des Rechners.
 - Hält je Rechner den letzten Stand, den Verlauf (Ringpuffer) und `last_seen`.
 - Zustände: **ok** (Paket jünger als 6 s), **stale** (6 bis 30 s, Kachel gedimmt), **offline** (älter als 30 s, Kachel rot mit "seit hh:mm").
-- Liefert `/screen/1` (Dashboard) und `/events` (SSE) aus.
+- Liefert `/screen/1` (Dashboard), `/events` (SSE) und `/api/state` (JSON) aus.
+- Gibt auf Wunsch alle empfangenen Werte als reinen Text aus, ohne Graphen: `rackmon top` zeigt sie live, `console_interval` schreibt sie ins Protokoll.
 - Konfiguration in einer Datei: Rechner mit Namen, Gruppe und Token, Grenzwerte, Bildschirme mit Kachelzuordnung. Ein Beispiel liegt als `rackmon.example.yaml` im Repo, echte Tokens bleiben lokal.
 - Der Server bindet nur an die Adresse im privaten Netz oder LAN.
 
 ## 6. Bildschirm-Layout (1424 x 280)
 
-Aufteilung: 4 Spalten x 2 Zeilen, Kachel 356 x 131 px, unten ein Fußstreifen von 18 px.
+Vier Spalten, jede Kachel 340 x 246 px. Es sind aber mehr als vier Rechner: Die Anzeige **blättert seitenweise**. Seite 1 zeigt die ersten vier Rechner, nach einigen Sekunden gleitet Seite 2 mit den nächsten vier herein. Punkte unten in der Mitte zeigen die aktuelle Seite. Der Takt ist einstellbar (Vorgabe 8 Sekunden). Mit mehr Rechnern kommen weitere Seiten dazu.
+
+Weil eine Kachel die ganze Höhe nutzt, gibt es Platz für echte Graphen statt nur Zahlen:
 
 ```
-+--------------+--------------+--------------+--------------+
-| mac-1      * | win-1      * | lin-1      * | pve-1      * |
-| CPU 12% ~~~~ | CPU  8% ~~~~ | CPU 21% ~~~~ | CPU  5% ~~~~ |
-| RAM ###--  Disk ##---  54C  v 1.2 MB/s  ^ 40 KB/s  Job: 2  |
-+--------------+--------------+--------------+--------------+
-| pi-1       * | pi-2       * | pi-3       * | pi-4       * |
-| ...                                                          |
-+--------------+--------------+--------------+--------------+
-| 23.11.2026 14:32      8/8 online      Server ok              |
-+-------------------------------------------------------------+
++----------------------------------------+
+| * ci-mac-01              Mac mini      |   Name, Statuspunkt, Rolle
+|  (ring 34%)   Prozessor, 5 Minuten     |   Ring + Verlauf als Fläche
+|               ~~~~~~~~~~~~~~~~~~~~~~   |
+|  52°          Grenze 75°               |   Temperatur groß + Verlauf
+|  Temperatur   ~~~~~~~~~~~~~~~~~~~~~~   |   mit gestrichelter Grenzlinie
+|  RAM   ######----   61 %  9,8 GB       |
+|  Disk  ####------   38 %               |
+|  v 1,2 MB/s  ^ 40 KB/s  [3 Jobs]  12 Tage |
++----------------------------------------+
 ```
 
-- Obere Zeile: die vier Rechner. Untere Zeile: die vier Raspberry Pi.
-- Pro Kachel: Name mit Statuspunkt, große CPU-Zahl mit Verlaufslinie der letzten fünf Minuten, schmale Balken für RAM und Datenträger, kleine Werte für Temperatur, Netz und laufende Jobs.
-- Farben: grün normal, gelb ab 70 %, rot ab 90 %. Dunkles Thema, wenig Helligkeit, damit das Display im Rack nicht blendet.
-- Ein Raspberry Pi mit Unterspannung zeigt ein Blitz-Symbol.
-- Der Fußstreifen zeigt Uhrzeit, Zahl der erreichbaren Rechner und den Serverzustand.
+- **Kopf:** Statuspunkt, Name, Rolle. Offline: roter Punkt, Kachel gedimmt, "offline seit hh:mm".
+- **Prozessor:** Ring mit Prozentzahl und daneben ein Flächenverlauf der letzten fünf Minuten mit Endpunkt.
+- **Temperatur:** große Zahl, daneben ein Verlauf mit gestrichelter Grenzlinie. Die Farbe folgt dem Wert.
+- **RAM und Datenträger:** zwei schmale Balken mit Prozent und, wo es passt, absoluten Werten.
+- **Fuß:** Netz Rx/Tx, Zahl der laufenden CI-Jobs als Marke, Uptime.
+- **Farben:** blau für den Prozessor, Temperatur in Orange. Ab 70 % gelb, ab 90 % rot (Prozessor, Speicher, Datenträger). Temperaturgrenzen sind einstellbar.
+- Raspberry Pi mit Unterspannung: Blitz-Symbol an der Temperatur.
+- Dunkles Thema, flache Flächen, keine Verläufe oder Schatten. Das Display blendet im Rack nicht und bleibt auch bei kleinen Schriften lesbar.
+- Fußstreifen: Uhrzeit links, "n von m online" rechts, Seitenpunkte in der Mitte.
+
+Die fertige Anzeige zeigen `docs/images/seite-1.png` und `docs/images/seite-2.png`.
 
 ## 7. Anzeige am Server-Rechner
 
@@ -145,7 +154,7 @@ Weiter gilt:
 
 ## 9. Ausbau
 
-- Weitere Bildschirme (Detailansicht je Rechner, Runner-Auslastung), Touch zum Umschalten.
+- Weitere Bildschirme (Detailansicht je Rechner, Runner-Auslastung), Touch zum Umschalten und Anhalten des Blätterns.
 - Proxmox-Daten über die API: Zahl und Zustand der virtuellen Maschinen.
 - Meldung bei Ausfall (zum Beispiel per Push-Nachricht), wenn ein Rechner länger offline ist.
 - Runner-Status über die GitHub-API: beschäftigt, frei, offline, laufender Job.
