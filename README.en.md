@@ -9,6 +9,8 @@
 
 ![Page 1: four machines with CPU ring, history, temperature, memory and disk](docs/images/seite-1.png)
 
+The images show the author's real rack: a 10-inch rack with the [GeeekPi 6.91-inch display](https://deskpi.com/products/deskpi-6-91-inch-touch-screen-1424x280-tft-lcd-display-10-inch-1u-rackmount-monitor-for-deskpi-rackmate-t0-t1-t2-server-cabinets) (1424 x 280 pixels, 1U, touch screen, also sold as a DeskPi panel for the RackMate cabinets).
+
 ## Try it
 
 No configuration, no agents, made-up values:

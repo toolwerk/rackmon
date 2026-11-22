@@ -11,6 +11,8 @@
 
 ![Seite 2: vier Raspberry Pi mit Prozessor-Ring, Verlauf, Temperatur, Speicher und Datenträger](docs/images/seite-2.png)
 
+Die Bilder zeigen das echte Rack des Autors: ein 10-Zoll-Rack mit dem [GeeekPi 6,91-Zoll-Display](https://deskpi.com/products/deskpi-6-91-inch-touch-screen-1424x280-tft-lcd-display-10-inch-1u-rackmount-monitor-for-deskpi-rackmate-t0-t1-t2-server-cabinets) (1424 x 280 Bildpunkte, 1U, Touchscreen, auch als DeskPi-Panel für die RackMate-Schränke erhältlich).
+
 ## Ausprobieren
 
 Ohne Konfiguration und ohne Agenten, mit erfundenen Werten:
