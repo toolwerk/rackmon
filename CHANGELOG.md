@@ -4,13 +4,20 @@ Alle Änderungen stehen hier, nach [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.2.1] - 2026-11-22
+
 ### Added
 
 - Windows: Prozessortemperatur aus LibreHardwareMonitor über `-temp-url` (nur localhost).
 
+### Changed
+
+- Screenshots in der README zeigen eine echte Anzeige.
+
 ### Fixed
 
 - Windows-Installer: Ein erneuter Aufruf aktualisiert die Dienstzeile jetzt wirklich.
+- Die Temperaturquelle folgt keiner Weiterleitung mehr, damit die Prüfung auf localhost nicht umgangen werden kann.
 
 ## [0.2.0] - 2026-11-22
 
