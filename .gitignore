@@ -1,0 +1,15 @@
+# Go
+/bin/
+/dist/
+*.exe
+*.test
+*.out
+coverage.out
+
+# Konfiguration mit Tokens bleibt lokal, eine .example-Datei gehört ins Repo
+rackmon.yaml
+*.local.yaml
+.env
+
+# System
+.DS_Store
