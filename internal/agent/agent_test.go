@@ -87,3 +87,59 @@ func TestCollectAndSend(t *testing.T) {
 		t.Fatalf("Authorization = %v", gotAuth.Load())
 	}
 }
+
+func TestPickLHM(t *testing.T) {
+	const js = `{"Text":"Sensor","Children":[{"Text":"PC","Children":[
+	 {"Text":"AMD Ryzen 7","ImageURL":"images_icon/cpu.png","Children":[
+	  {"Text":"Temperatures","ImageURL":"images_icon/temperature.png","Children":[
+	   {"Text":"Core #1","Value":"58,0 °C","Type":"Temperature"},
+	   {"Text":"Core (Tctl/Tdie)","Value":"52,5 °C","Type":"Temperature"}]}]},
+	 {"Text":"NVMe","ImageURL":"images_icon/hdd.png","Children":[
+	  {"Text":"Temperature","Value":"71,0 °C","Type":"Temperature"}]}]}]}`
+	var root lhmNode
+	if err := json.Unmarshal([]byte(js), &root); err != nil {
+		t.Fatal(err)
+	}
+	got := pickLHM(root)
+	if got == nil || *got != 52.5 {
+		t.Fatalf("erwartet Tctl mit 52,5, bekam %v", got)
+	}
+	if pickLHM(lhmNode{}) != nil {
+		t.Fatal("leerer Baum muss nil geben")
+	}
+}
+
+func TestFetchLHM(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		w.Write([]byte(`{"Text":"x","Children":[{"Text":"cpu","ImageURL":"cpu.png","Children":[{"Text":"CPU Package","Value":"61.0 °C","Type":"Temperature"}]}]}`))
+	}))
+	defer ts.Close()
+	got, err := fetchLHM(context.Background(), ts.Client(), ts.URL)
+	if err != nil || got == nil || *got != 61 {
+		t.Fatalf("got %v, err %v", got, err)
+	}
+}
+
+func TestValidateTempURL(t *testing.T) {
+	for _, ok := range []string{"http://127.0.0.1:8085/data.json", "http://localhost:8085/data.json", "http://[::1]:8085/data.json"} {
+		if err := validateTempURL(ok); err != nil {
+			t.Errorf("%s: %v", ok, err)
+		}
+	}
+	for _, bad := range []string{"http://192.168.1.5:8085/data.json", "http://example.org/data.json", "ftp://127.0.0.1/x", ""} {
+		if validateTempURL(bad) == nil {
+			t.Errorf("%q hätte abgelehnt werden müssen", bad)
+		}
+	}
+}
+
+func TestParseLHMValue(t *testing.T) {
+	for in, want := range map[string]float64{"52,5 °C": 52.5, "52.5 °C": 52.5, "58,8 \xb0C": 58.8, "61": 61} {
+		if got, ok := parseLHMValue(in); !ok || got != want {
+			t.Errorf("%q: %v %v", in, got, ok)
+		}
+	}
+	if _, ok := parseLHMValue("n/a"); ok {
+		t.Error("n/a darf keine Zahl sein")
+	}
+}

@@ -86,6 +86,7 @@ func runAgentCmd(args []string) error {
 	tok := fs.String("token", os.Getenv("RACKMON_TOKEN"), "Token dieses Rechners")
 	tokFile := fs.String("token-file", "", "Datei, die das Token enthält")
 	iv := fs.Duration("interval", 0, "Abstand der Pakete (Vorgabe 2s)")
+	tempURL := fs.String("temp-url", os.Getenv("RACKMON_TEMP_URL"), "Windows: Adresse von data.json aus LibreHardwareMonitor, nur localhost")
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
@@ -105,7 +106,7 @@ func runAgentCmd(args []string) error {
 			*iv = d
 		}
 	}
-	cfg := agent.Config{Server: *srv, Token: *tok, Interval: *iv, Version: version, Logf: log.Printf}
+	cfg := agent.Config{Server: *srv, Token: *tok, Interval: *iv, Version: version, TempURL: *tempURL, Logf: log.Printf}
 	if err := cfg.Validate(); err != nil {
 		return err
 	}

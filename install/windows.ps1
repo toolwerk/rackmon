@@ -1,12 +1,14 @@
 # Installiert den Rackmon-Agenten unter Windows als Dienst. In einer PowerShell als Administrator ausfuehren, wiederholbar.
 #
 #   .\windows.ps1 -Binary .\rackmon.exe -Server http://server:8470 -TokenFile .\token
+#   Mit Temperatur aus LibreHardwareMonitor: zusaetzlich -TempUrl http://127.0.0.1:8085/data.json
 #
 # Der Dienst laeuft als LocalService. Das Token liegt in einer Datei, die nur Administratoren, System und dieser Dienst lesen.
 param(
   [Parameter(Mandatory = $true)][string]$Binary,
   [Parameter(Mandatory = $true)][string]$Server,
-  [Parameter(Mandatory = $true)][string]$TokenFile
+  [Parameter(Mandatory = $true)][string]$TokenFile,
+  [string]$TempUrl = ''   # optional: data.json von LibreHardwareMonitor, nur localhost, fuer die Prozessortemperatur
 )
 $ErrorActionPreference = 'Stop'
 $name = 'RackmonAgent'
@@ -25,8 +27,10 @@ $tok = (Get-Content -Raw $TokenFile).Trim()
 Set-Content -Path "$data\token" -Value $tok -NoNewline -Encoding ascii
 
 $cmd = "`"$dir\rackmon.exe`" agent -server $Server -token-file `"$data\token`""
+if ($TempUrl) { $cmd += " -temp-url $TempUrl" }
 if (Get-Service $name -ErrorAction SilentlyContinue) {
-  $null = sc.exe config $name binPath= $cmd
+  # sc.exe config mit Leerzeichen und Anfuehrungszeichen in PowerShell scheitert still, deshalb direkt in die Registrierung
+  Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\$name" -Name ImagePath -Value $cmd
 } else {
   $null = New-Service -Name $name -BinaryPathName $cmd -DisplayName 'Rackmon agent' -StartupType Automatic
 }

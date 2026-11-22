@@ -4,6 +4,14 @@ Alle Änderungen stehen hier, nach [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+### Added
+
+- Windows: Prozessortemperatur aus LibreHardwareMonitor über `-temp-url` (nur localhost).
+
+### Fixed
+
+- Windows-Installer: Ein erneuter Aufruf aktualisiert die Dienstzeile jetzt wirklich.
+
 ## [0.2.0] - 2026-11-22
 
 ### Added

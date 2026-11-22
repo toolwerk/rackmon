@@ -23,6 +23,7 @@ import (
 // Collector sammelt ein Messpaket. Er merkt sich die Zählerstände des Netzes und die Zahl der Jobs zwischen den Aufrufen.
 type Collector struct {
 	Version string
+	TempURL string // optional: data.json von LibreHardwareMonitor (nur localhost), für Windows
 
 	lastRx, lastTx uint64
 	lastNet        time.Time
@@ -60,6 +61,9 @@ func (c *Collector) Collect(ctx context.Context) model.Sample {
 		sm.Uptime = u
 	}
 	sm.Temp = cpuTemp(ctx)
+	if sm.Temp == nil && c.TempURL != "" {
+		sm.Temp, _ = fetchLHM(ctx, lhmClient, c.TempURL) // Fehler: Wert bleibt leer
+	}
 	sm.CIJobs = c.runnerJobs(ctx)
 	sm.PowerWarn = powerWarn(ctx)
 	return sm

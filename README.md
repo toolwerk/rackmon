@@ -74,11 +74,13 @@ pi-4   offline  -    -     -    -            -     -     -        -       -     
 |---|---|---|---|
 | Prozessor, RAM, Swap, Datenträger, Netz, Uptime | ja | ja | ja |
 | Load-Average | ja | ja | nein |
-| CPU-Temperatur | ja | ja, wo das System sie liefert | meist nicht |
+| CPU-Temperatur | ja | ja, wo das System sie liefert | nur mit [LibreHardwareMonitor](https://github.com/LibreHardwareMonitor/LibreHardwareMonitor) (siehe unten) |
 | Raspberry Pi: Unterspannung, Drosselung | ja | nein | nein |
 | Laufende Jobs eines GitHub-Runners | ja | ja | ja |
 
 Fehlt ein Wert, bleibt er leer und die Kachel zeigt einen Strich.
+
+**Temperatur unter Windows:** Windows hat dafür keine eingebaute Schnittstelle. LibreHardwareMonitor liest die Sensoren und stellt sie mit seinem Web-Server als `data.json` bereit. Der Agent holt die Prozessortemperatur von dort, wenn er mit `-temp-url http://127.0.0.1:8085/data.json` (oder `RACKMON_TEMP_URL`) startet. Erlaubt sind nur Adressen auf dem eigenen Rechner. Der Web-Server von LibreHardwareMonitor sollte nur auf `127.0.0.1` lauschen. Beim Installieren des Dienstes: `install/windows.ps1 ... -TempUrl http://127.0.0.1:8085/data.json`.
 
 ## Anzeige an einem Rechner betreiben
 

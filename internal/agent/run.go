@@ -19,6 +19,7 @@ type Config struct {
 	Token    string        // Token dieses Rechners
 	Interval time.Duration // Abstand der Pakete
 	Version  string
+	TempURL  string // optional, nur localhost: data.json von LibreHardwareMonitor
 	Logf     func(string, ...any)
 }
 
@@ -40,6 +41,11 @@ func (c *Config) Validate() error {
 	if c.Interval < time.Second {
 		return errors.New("Takt muss mindestens 1 Sekunde sein")
 	}
+	if c.TempURL != "" {
+		if err := validateTempURL(c.TempURL); err != nil {
+			return err
+		}
+	}
 	if c.Logf == nil {
 		c.Logf = func(string, ...any) {}
 	}
@@ -53,7 +59,7 @@ func Run(ctx context.Context, c Config) error {
 	if err := c.Validate(); err != nil {
 		return err
 	}
-	col := &Collector{Version: c.Version}
+	col := &Collector{Version: c.Version, TempURL: c.TempURL}
 	client := &http.Client{Timeout: 5 * time.Second}
 	col.Collect(ctx) // erste Messung nur zum Aufwärmen der Zähler
 	t := time.NewTicker(c.Interval)
