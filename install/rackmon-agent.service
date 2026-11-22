@@ -1,0 +1,22 @@
+[Unit]
+Description=Rackmon agent
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=/etc/rackmon/agent.env
+ExecStart=/usr/local/bin/rackmon agent
+Restart=always
+RestartSec=5
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=64M
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=Rackmon server
+After=network-online.target netbird.service
+Wants=network-online.target
+
+[Service]
+# Die Konfiguration enthält die Tokens und bleibt für root lesbar, systemd reicht sie dem Dienst durch.
+LoadCredential=server.yaml:/etc/rackmon/server.yaml
+ExecStart=/usr/local/bin/rackmon server -config %d/server.yaml
+Restart=always
+RestartSec=5
+DynamicUser=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+MemoryMax=128M
+
+[Install]
+WantedBy=multi-user.target

@@ -13,3 +13,6 @@ rackmon.yaml
 
 # System
 .DS_Store
+
+# Serverkonfiguration mit Tokens
+server.yaml

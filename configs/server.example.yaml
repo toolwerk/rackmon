@@ -1,0 +1,39 @@
+# Beispiel für die Serverkonfiguration. Kopieren, anpassen, Tokens mit `rackmon token` erzeugen.
+# Die echte Datei gehört nicht ins Repo: sie enthält die Tokens und steht in .gitignore.
+
+# Adressen, auf denen der Server hört (mehrere mit Komma). Nur Adressen eintragen, die Agenten und Display erreichen.
+listen: "127.0.0.1:8470"
+
+# Alle empfangenen Werte in diesem Abstand als Text in die Standardausgabe schreiben (0 = aus).
+console_interval: 60s
+
+# Nach so langer Stille gilt ein Rechner als "stale" (gedimmt) bzw. "offline" (rot).
+stale_after: 6s
+offline_after: 30s
+
+# Grenzen für die Farben im Dashboard: Prozent und Grad Celsius.
+thresholds:
+  warn: 70
+  crit: 90
+  temp_warn: 70
+  temp_crit: 85
+
+# Ein Eintrag je Rechner. Jedes Token mindestens 24 Zeichen und nur für diesen einen Rechner.
+# Ein Token darf auch aus der Umgebung kommen: token: "${RACKMON_TOKEN_RECHNER_1}"
+hosts:
+  - id: rechner-1
+    name: Rechner 1
+    role: "Mac mini · macOS"
+    token: "ERSETZEN-MIT-rackmon-token-AUSGABE-1"
+  - id: rechner-2
+    name: Rechner 2
+    role: "Mini-PC · Linux"
+    token: "ERSETZEN-MIT-rackmon-token-AUSGABE-2"
+
+# Ein Bildschirm zeigt eine Auswahl der Rechner, per_page Kacheln je Seite.
+# Sind es mehr Rechner als per_page, blättert die Anzeige alle page_seconds weiter.
+screens:
+  - id: 1
+    hosts: [rechner-1, rechner-2]
+    per_page: 4
+    page_seconds: 8
