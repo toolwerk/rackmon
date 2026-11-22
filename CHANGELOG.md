@@ -4,6 +4,8 @@ Alle Änderungen stehen hier, nach [Keep a Changelog](https://keepachangelog.com
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-22
+
 ### Added
 
 - Agent für Linux, macOS und Windows (Prozessor, Speicher, Swap, Datenträger, Netz, Uptime, Temperatur, GitHub-Runner-Jobs, Raspberry-Pi-Strom).
