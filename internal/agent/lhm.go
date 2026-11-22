@@ -109,4 +109,13 @@ func parseLHMValue(s string) (float64, bool) {
 	return v, err == nil
 }
 
-var lhmClient = &http.Client{Timeout: 1500 * time.Millisecond}
+// newLHMClient folgt keiner Weiterleitung: Sonst könnte eine Antwort den Agenten auf eine fremde Adresse schicken
+// und die Prüfung auf localhost umgehen.
+func newLHMClient() *http.Client {
+	return &http.Client{
+		Timeout:       1500 * time.Millisecond,
+		CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse },
+	}
+}
+
+var lhmClient = newLHMClient()

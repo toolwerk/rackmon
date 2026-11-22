@@ -143,3 +143,17 @@ func TestParseLHMValue(t *testing.T) {
 		t.Error("n/a darf keine Zahl sein")
 	}
 }
+
+func TestFetchLHMFollowsNoRedirect(t *testing.T) {
+	other := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		t.Error("die Weiterleitung darf nicht verfolgt werden")
+	}))
+	defer other.Close()
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, other.URL, http.StatusFound)
+	}))
+	defer ts.Close()
+	if got, err := fetchLHM(context.Background(), newLHMClient(), ts.URL); err == nil || got != nil {
+		t.Fatalf("erwartet Fehler bei Weiterleitung, bekam %v, %v", got, err)
+	}
+}
