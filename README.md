@@ -9,7 +9,7 @@
 
 ![Seite 1: vier Rechner mit Prozessor-Ring, Verlauf, Temperatur, Speicher und Datenträger](docs/images/seite-1.png)
 
-![Seite 2: Raspberry Pi, einer davon offline, einer mit Unterspannung](docs/images/seite-2.png)
+![Seite 2: vier Raspberry Pi mit Prozessor-Ring, Verlauf, Temperatur, Speicher und Datenträger](docs/images/seite-2.png)
 
 ## Ausprobieren
 
